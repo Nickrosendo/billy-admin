@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "billy-admin"
+  },
+  "targets": {
+    "billy-web": {
+      "hosting": {
+        "admin": [
+          "billy-admin"
+        ]
+      }
+    }
+  }
+}

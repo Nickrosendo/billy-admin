@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+
+.App {
+  text-align: center;
+  
+}
+
+.App-logo {
+  height: 50vh;
+  width: 20rem;
+  pointer-events: none;
+}
+
+.App-header {
+  background: #fff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 5vmin);
+  color: #444;
+  
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  background: #fff;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  color: #444;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+}
+
+#app {
+	height: 100%;
+	overflow: hidden;
+}
+
+.text-success {
+  color: #216C2A;
+}
+
+.text-danger {
+  color: #721c24;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.route-container {
+  padding: 20px 10px;
+  margin-top: 56px;
+  height: calc(100% - 56px);
+  width: 100%;
+  overflow-y: auto;
+}
+
+.transparent-btn-pressed {
+  color: #444;
+  outline: 0;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+}
+
+.transparent-btn-pressed:active {
+  background: #ddd;
+}
+
