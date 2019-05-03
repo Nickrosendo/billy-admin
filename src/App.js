@@ -1,6 +1,7 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
+import Hidden from "@material-ui/core/Hidden";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -12,7 +13,6 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import InboxIcon from "@material-ui/icons/MoveToInbox";
 import MailIcon from "@material-ui/icons/Mail";
-import MenuIcon from "@material-ui/icons/Menu";
 import SearchIcon from "@material-ui/icons/Search";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import NotificationsIcon from "@material-ui/icons/Notifications";
@@ -20,10 +20,10 @@ import MoreIcon from "@material-ui/icons/MoreVert";
 import Badge from "@material-ui/core/Badge";
 import IconButton from "@material-ui/core/IconButton";
 import InputBase from "@material-ui/core/InputBase";
-import { fade } from '@material-ui/core/styles/colorManipulator';
+import MenuIcon from "@material-ui/icons/Menu";
+import { fade } from "@material-ui/core/styles/colorManipulator";
 
 import logo from "./assets/images/billy-pizza.png";
-import logoSm from "./assets/images/billy-pizza-icon.png";
 import "./App.css";
 
 const drawerWidth = 240;
@@ -33,13 +33,23 @@ const styles = theme => ({
     display: "flex"
   },
   appBar: {
-    width: `calc(100% - ${drawerWidth}px)`,
+    [theme.breakpoints.up("sm")]: {
+      width: `calc(100% - ${drawerWidth}px)`
+    },
     marginLeft: drawerWidth,
     backgroundColor: "rgb(255, 180, 106)"
   },
   drawer: {
-    width: drawerWidth,
-    flexShrink: 0
+    [theme.breakpoints.up("sm")]: {
+      width: drawerWidth,
+      flexShrink: 0
+    }
+  },
+  menuButton: {
+    marginRight: 20,
+    [theme.breakpoints.up("sm")]: {
+      display: "none"
+    }
   },
   drawerPaper: {
     width: drawerWidth
@@ -53,10 +63,6 @@ const styles = theme => ({
   },
   grow: {
     flexGrow: 1
-  },
-  menuButton: {
-    marginLeft: -12,
-    marginRight: 20
   },
   title: {
     display: "none",
@@ -114,27 +120,82 @@ const styles = theme => ({
     [theme.breakpoints.up("md")]: {
       display: "none"
     }
+  },
+  drawerHeader: {
+    textAlign: "center",
+    padding: "14px 0"
+  },
+  drawerLogoImg: {
+    width: 80,
+    height: 80
   }
 });
 
 class App extends React.Component {
+  state = {
+    mobileOpen: false
+  };
+
+  handleDrawerToggle = () => {
+    this.setState(state => ({ mobileOpen: !state.mobileOpen }));
+  };
+
   render() {
-    const { classes } = this.props;
+    const { classes, theme } = this.props;
+
+    const drawer = (
+      <div>
+        <div className={classes.drawerHeader}>
+          <img src={logo} className={classes.drawerLogoImg} alt="logo-small" />
+          <Typography
+            className={classes.title}
+            variant="h6"
+            color="inherit"
+            noWrap
+          >
+            Billy
+          </Typography>
+        </div>
+        <Divider />
+        <List>
+          {["Pedidos", "Cardápio", "Horário de Funcionamento"].map(
+            (text, index) => (
+              <ListItem button key={text}>
+                <ListItemIcon>
+                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                </ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItem>
+            )
+          )}
+        </List>
+        <Divider />
+        <List>
+          {["Ajuda"].map((text, index) => (
+            <ListItem button key={text}>
+              <ListItemIcon>
+                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+              </ListItemIcon>
+              <ListItemText primary={text} />
+            </ListItem>
+          ))}
+        </List>
+      </div>
+    );
 
     return (
       <div className={classes.root}>
         <CssBaseline />
         <AppBar position="fixed" className={classes.appBar}>
           <Toolbar>
-            <img src={logoSm} className={{width: 48, height: 48}} alt="logo-small" />
-            <Typography
-              className={classes.title}
-              variant="h6"
+            <IconButton
               color="inherit"
-              noWrap
+              aria-label="Open drawer"
+              onClick={this.handleDrawerToggle}
+              className={classes.menuButton}
             >
-              Billy
-            </Typography>
+              <MenuIcon />
+            </IconButton>
             <div className={classes.search}>
               <div className={classes.searchIcon}>
                 <SearchIcon />
@@ -179,41 +240,37 @@ class App extends React.Component {
             </div>
           </Toolbar>
         </AppBar>
-        <Drawer
-          className={classes.drawer}
-          variant="permanent"
-          classes={{
-            paper: classes.drawerPaper
-          }}
-          anchor="left"
-        >
-          <div className={classes.toolbar} />
-          <Divider />
-          <List>
-            {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
-            ))}
-          </List>
-          <Divider />
-          <List>
-            {["All mail", "Trash", "Spam"].map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
-            ))}
-          </List>
-        </Drawer>
+        <nav className={classes.drawer}>
+          {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+          <Hidden xsDown implementation="css">
+            <Drawer
+              className={classes.drawer}
+              variant="permanent"
+              classes={{
+                paper: classes.drawerPaper
+              }}
+              anchor="left"
+            >
+              {drawer}
+            </Drawer>
+          </Hidden>
+          <Hidden smUp implementation="css">
+            <Drawer
+              container={this.props.container}
+              variant="temporary"
+              anchor={theme.direction === "rtl" ? "right" : "left"}
+              open={this.state.mobileOpen}
+              onClose={this.handleDrawerToggle}
+              classes={{
+                paper: classes.drawerPaper
+              }}
+            >
+              {drawer}
+            </Drawer>
+          </Hidden>
+        </nav>
         <main className={classes.content}>
           <div className={classes.toolbar} />
-          <img src={logo} className="App-logo" alt="logo" />
           <h1> Billy Admin</h1>
         </main>
       </div>
@@ -221,4 +278,4 @@ class App extends React.Component {
   }
 }
 
-export default withStyles(styles)(App);
+export default withStyles(styles, { withTheme: true })(App);
