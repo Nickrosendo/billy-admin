@@ -34,6 +34,7 @@ import HelpContainer from './routes/help/HelpContainer';
 
 // layout components
 import Navigation from './components/navigation/Navigation';
+import Loading from './components/Loading';
 
 import './App.css';
 
@@ -138,8 +139,11 @@ class App extends React.Component {
 
   render() {
     const { classes } = this.props;
-
-    return this.state.initialized && this.props.firebase.auth.id ? (
+    console.log('render: ', this.props.firebase.auth.uid)
+    if(this.state.initialized && !this.props.firebase.auth.uid) {
+      return (<LoginContainer/>);
+    }
+    return this.state.initialized ? (
       <div className={classes.root}>
         <Router>
           <CssBaseline />
@@ -209,7 +213,7 @@ class App extends React.Component {
           </main>
         </Router>
       </div>
-    ) : (<LoginContainer/>);
+    ): (<Loading />);
   }
 }
 

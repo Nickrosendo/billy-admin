@@ -14,7 +14,7 @@ const styles = theme => ({
 });
 
 function InputWithIcon(props) {
-  const { classes, label, Icon, type } = props;
+  const { classes, label, Icon, type, value, onChange } = props;
 
   return (
     <div>
@@ -30,6 +30,8 @@ function InputWithIcon(props) {
               </InputAdornment>
             ) : null
           }
+          value={value}
+          onChange={onChange}
         />
       </FormControl>
     </div>
@@ -40,7 +42,9 @@ InputWithIcon.propTypes = {
   classes: PropTypes.object.isRequired,
   label: PropTypes.string.isRequired,
   Icon: PropTypes.func,
-  type: PropTypes.string
+  type: PropTypes.string,
+  value: PropTypes.string,
+  onChange: PropTypes.func
 };
 
 export default withStyles(styles)(InputWithIcon);
