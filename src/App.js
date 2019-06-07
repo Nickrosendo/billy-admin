@@ -14,6 +14,8 @@ import IconButton from '@material-ui/core/IconButton';
 import InputBase from '@material-ui/core/InputBase';
 import MenuIcon from '@material-ui/icons/Menu';
 import { fade } from '@material-ui/core/styles/colorManipulator';
+import MenuItem from '@material-ui/core/MenuItem';
+import Menu from '@material-ui/core/Menu';
 
 import {
   BrowserRouter as Router,
@@ -35,6 +37,9 @@ import HelpContainer from './routes/help/HelpContainer';
 // layout components
 import Navigation from './components/navigation/Navigation';
 import Loading from './components/Loading';
+
+//actions 
+import { signOut } from './store/actions/auth';
 
 import './App.css';
 
@@ -121,13 +126,34 @@ const styles = theme => ({
     [theme.breakpoints.up('md')]: {
       display: 'none',
     },
-  },
+  }
 });
 
 class App extends React.Component {
   state = {
     initialized: false,
+    anchorEl: null,
   };
+
+  handleProfileMenuOpen = (event) => {
+    console.log('anchorEl: ', event.currentTarget);
+
+    this.setState({
+      anchorEl: event.currentTarget,
+    });
+  }
+
+  handleCloseProfilePopover = () => {
+    this.setState({
+      anchorEl: null,
+    });
+  };
+
+  handleSignout = () => {
+    console.log('props: ', this.props);
+    this.props.signOut();
+    this.setState({ anchorEl: null})
+  }
 
   componentDidMount() {
     console.time('firebaseInit');
@@ -139,10 +165,26 @@ class App extends React.Component {
 
   render() {
     const { classes } = this.props;
-    console.log('render: ', this.props.firebase.auth.uid)
-    if(this.state.initialized && !this.props.firebase.auth.uid) {
-      return (<LoginContainer/>);
+    const open = Boolean(this.state.anchorEl);
+    console.log('render: ', this.props.firebase.auth.uid);
+    if (this.state.initialized && !this.props.firebase.auth.uid) {
+      return <LoginContainer />;
     }
+
+    const renderMenu = (
+      <Menu
+        anchorEl={this.state.anchorEl}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        open={open}
+        onClose={this.handleCloseProfilePopover}
+      >
+        <MenuItem onClick={this.handleCloseProfilePopover}>Profile</MenuItem>
+        <MenuItem onClick={this.handleSignout}>Logout</MenuItem>
+      </Menu>
+    );
+
+
     return this.state.initialized ? (
       <div className={classes.root}>
         <Router>
@@ -188,7 +230,7 @@ class App extends React.Component {
                   color="inherit"
                 >
                   <AccountCircle />
-                </IconButton>
+                </IconButton>                
               </div>
               <div className={classes.sectionMobile}>
                 <IconButton
@@ -201,6 +243,7 @@ class App extends React.Component {
               </div>
             </Toolbar>
           </AppBar>
+          {renderMenu}
           <Navigation />
           <main className={classes.content}>
             <Switch>
@@ -213,12 +256,17 @@ class App extends React.Component {
           </main>
         </Router>
       </div>
-    ): (<Loading />);
+    ) : (
+      <Loading />
+    );
   }
 }
 
 const mapStateToProps = state => ({ firebase: state.firebase });
+const mapDispatchToProps = {
+  signOut
+}
 
-export default connect(mapStateToProps)(
+export default connect(mapStateToProps, mapDispatchToProps)(
   withStyles(styles, { withTheme: true })(App)
 );
