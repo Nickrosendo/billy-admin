@@ -1,6 +1,6 @@
 {
   "projects": {
-    "default": "billy-admin"
+    "default": "billy-web"
   },
   "targets": {
     "billy-web": {

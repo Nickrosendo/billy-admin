@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import { connect } from 'react-redux';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
@@ -13,14 +12,24 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 // ui components
 import Loading from '../../components/Loading';
+import SplitButton from '../../components/inputs/SplitButton';
 
 //actions
-import { fetchOrders } from '../../store/actions/orders';
+import {
+  fetchOrders,
+  restaurantOrderConfirm,
+  restaurantOrderPreprare,
+  restaurantOrderReady,
+} from '../../store/actions/orders';
 
 const theme = createMuiTheme({
   palette: {
     primary: {
       main: 'rgb(255, 180, 106)',
+      contrastText: '#fff',
+    },
+    text: {
+      main: '#fff',
     },
   },
 });
@@ -78,7 +87,22 @@ class OrdersContainer extends Component {
   render() {
     const { classes, orders } = this.props;
     const { history } = orders;
-    console.log('history.length: ', history.length);
+
+    const orderOptions = [
+      {
+        label: 'Pedido confirmado',
+        handler: this.props.restaurantOrderConfirm,
+      },
+      {
+        label: 'Pedido preparado',
+        handler: this.props.restaurantOrderPreprare,
+      },
+      {
+        label: 'Pedido pronto',
+        handler: this.props.restaurantOrderReady,
+      },
+    ];
+
     return this.state.loading ? (
       <Loading />
     ) : (
@@ -86,6 +110,7 @@ class OrdersContainer extends Component {
         {history.map((order, index) => {
           return (
             <ExpansionPanel
+              key={order.id}
               expanded={this.state.expanded === index}
               onChange={() => {
                 if (this.state.expanded === index) {
@@ -98,38 +123,30 @@ class OrdersContainer extends Component {
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                 <div className={classes.content}>
                   <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <MuiThemeProvider theme={theme}>
-                      <Button
-                        variant="contained"
-                        className={classes.button}
-                        color="primary"
-                      >
-                        Confirmar
-                      </Button>
-                      <Button variant="contained" style={{ marginLeft: 10 }}>
-                        Detalhes
-                      </Button>
-                    </MuiThemeProvider>
+                    <Card className={classes.card} style={{ marginRight: 10 }}>
+                      R${order.totalPrice}
+                    </Card>
+                    <p>
+                      {' '}
+                      {order.items.map(item => (
+                        <span key={item._id}>
+                          {' '}
+                          ({item.quantity}x) - {item.name}{' '}
+                        </span>
+                      ))}{' '}
+                    </p>
                   </div>
-                  <p>
-                    {' '}
-                    {order.items.map(item => (
-                      <span>
-                        {' '}
-                        ({item.quantity}) - {item.name}{' '}
-                      </span>
-                    ))}{' '}
-                  </p>
-                  <Card className={classes.card} style={{ marginLeft: 10 }}>
-                    R${order.totalPrice}
-                  </Card>
                 </div>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
-                <Typography>
-                  Nulla facilisi. Phasellus sollicitudin nulla et quam mattis
-                  feugiat. Aliquam eget maximus est, id dignissim quam.
-                </Typography>
+                <div>
+                  <div>
+                    <Typography>Status do Pedido: {order.status} </Typography>
+                    <MuiThemeProvider theme={theme}>
+                      <SplitButton options={orderOptions} order={order} />
+                    </MuiThemeProvider>
+                  </div>
+                </div>
               </ExpansionPanelDetails>
             </ExpansionPanel>
           );
@@ -145,5 +162,8 @@ export default connect(
   mapStateToProps,
   {
     fetchOrders,
+    restaurantOrderConfirm,
+    restaurantOrderPreprare,
+    restaurantOrderReady,
   }
 )(withStyles(styles, { withTheme: true })(OrdersContainer));

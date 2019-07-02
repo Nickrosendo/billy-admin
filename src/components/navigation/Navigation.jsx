@@ -42,7 +42,8 @@ const styles = theme => ({
     }
   },
   item: {
-    textDecoration: "none"
+    textDecoration: "none",
+    color: '#333'
   }
 });
 
