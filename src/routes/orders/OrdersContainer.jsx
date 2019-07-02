@@ -22,6 +22,8 @@ import {
   restaurantOrderReady,
 } from '../../store/actions/orders';
 
+import moment from 'moment';
+
 const theme = createMuiTheme({
   palette: {
     primary: {
@@ -72,7 +74,7 @@ class OrdersContainer extends Component {
     loading: true,
   };
 
-  componentWillMount() {
+  componentWillMount() {    
     this.props
       .fetchOrders()
       .then(res => {
@@ -108,6 +110,7 @@ class OrdersContainer extends Component {
     ) : (
       <div className={classes.root}>
         {history.map((order, index) => {
+          const parsedOrderDate = moment(order.date).format('DD/MM/YYYY hh:mm');
           return (
             <ExpansionPanel
               key={order.id}
@@ -136,12 +139,15 @@ class OrdersContainer extends Component {
                       ))}{' '}
                     </p>
                   </div>
+                  <Card className={classes.card} style={{ marginRight: 10 }}>
+                    {parsedOrderDate}
+                  </Card>
                 </div>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
                 <div>
-                  <div>
-                    <Typography>Status do Pedido: {order.status} </Typography>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <Typography>Status do Pedido: </Typography>
                     <MuiThemeProvider theme={theme}>
                       <SplitButton options={orderOptions} order={order} />
                     </MuiThemeProvider>
