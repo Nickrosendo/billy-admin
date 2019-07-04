@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
 import { connect } from 'react-redux';
+
+import { withStyles } from '@material-ui/core/styles';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
+import Card from '@material-ui/core/Card';
+import { Button } from '@material-ui/core';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
@@ -12,7 +14,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 // ui components
 import Loading from '../../components/Loading';
-import SplitButton from '../../components/inputs/SplitButton';
+// import SplitButton from '../../components/inputs/SplitButton';
 
 //actions
 import {
@@ -20,6 +22,7 @@ import {
   restaurantOrderConfirm,
   restaurantOrderPreprare,
   restaurantOrderReady,
+  restaurantOrderPaymentReceived,
 } from '../../store/actions/orders';
 
 import moment from 'moment';
@@ -74,7 +77,7 @@ class OrdersContainer extends Component {
     loading: true,
   };
 
-  componentWillMount() {    
+  componentWillMount() {
     this.props
       .fetchOrders()
       .then(res => {
@@ -86,24 +89,85 @@ class OrdersContainer extends Component {
       });
   }
 
+  orderActions = order => {
+    switch (order.status) {
+      case 'finalizada':
+        return (
+          <Button disabled={true} variant="contained" color="primary">
+            Pedido finalizado
+          </Button>
+        );
+      case 'à confirmar':
+        return (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              this.props.restaurantOrderConfirm(order);
+            }}
+          >
+            Confirmar Pedido
+          </Button>
+        );
+      case 'ready':
+        return (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              this.props.restaurantOrderPaymentReceived(order);
+            }}
+          >
+            Confirmar Pagamento
+          </Button>
+        );
+      case 'preparing':
+        return (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              this.props.restaurantOrderReady(order);
+            }}
+          >
+            Pedido pronto
+          </Button>
+        );
+      case 'confirmada':
+        return (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              this.props.restaurantOrderPreprare(order);
+            }}
+          >
+            Preparar pedido
+          </Button>
+        );
+      default:
+        return null;
+    }
+  };
+
   render() {
     const { classes, orders } = this.props;
     const { history } = orders;
 
-    const orderOptions = [
-      {
-        label: 'Pedido confirmado',
-        handler: this.props.restaurantOrderConfirm,
-      },
-      {
-        label: 'Pedido preparado',
-        handler: this.props.restaurantOrderPreprare,
-      },
-      {
-        label: 'Pedido pronto',
-        handler: this.props.restaurantOrderReady,
-      },
-    ];
+    // const orderOptions = [
+    //   {
+    //     label: 'Pedido confirmado',
+    //     handler: this.props.restaurantOrderConfirm,
+    //   },
+    //   {
+    //     label: 'Pedido preparado',
+    //     handler: this.props.restaurantOrderPreprare,
+    //   },
+    //   {
+    //     label: 'Pedido pronto',
+    //     handler: this.props.restaurantOrderReady,
+    //   },
+    // ];
 
     return this.state.loading ? (
       <Loading />
@@ -145,13 +209,52 @@ class OrdersContainer extends Component {
                 </div>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <Typography>Status do Pedido: </Typography>
-                    <MuiThemeProvider theme={theme}>
-                      <SplitButton options={orderOptions} order={order} />
-                    </MuiThemeProvider>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      marginBottom: 10,
+                    }}
+                  >
+                    <Card className={classes.card} style={{ marginRight: 10 }}>
+                      Status do pedido:
+                    </Card>
+                    <Typography>{order.status}</Typography>
                   </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      marginBottom: 10,
+                    }}
+                  >
+                    <Card className={classes.card} style={{ marginRight: 10 }}>
+                      Nome do cliente:
+                    </Card>
+                    <Typography>{order.userName}</Typography>
+                  </div>
+                  {order.observation ? (
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        marginBottom: 10,
+                      }}
+                    >
+                      <Card
+                        className={classes.card}
+                        style={{ marginRight: 10 }}
+                      >
+                        Observações:
+                      </Card>
+                      <Typography>{order.observation}</Typography>
+                    </div>
+                  ) : null}
+                  <MuiThemeProvider theme={theme}>
+                    {this.orderActions(order)}
+                    {/* <SplitButton options={orderOptions} order={order} /> */}
+                  </MuiThemeProvider>
                 </div>
               </ExpansionPanelDetails>
             </ExpansionPanel>
@@ -171,5 +274,6 @@ export default connect(
     restaurantOrderConfirm,
     restaurantOrderPreprare,
     restaurantOrderReady,
+    restaurantOrderPaymentReceived,
   }
 )(withStyles(styles, { withTheme: true })(OrdersContainer));

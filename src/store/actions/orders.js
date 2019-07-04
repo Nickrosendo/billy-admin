@@ -5,57 +5,33 @@ export const fetchOrders = () => async (
 ) => {
   const firestore = getFirestore();
   const firebase = getFirebase();
-  firebase.auth().onAuthStateChanged(async user => {
-    if (user && user.uid) {
-      const { uid } = user;
-      await firestore
-        .collection('orders')
-        .where('userID', '==', uid)
-        .orderBy('date', 'desc')
-        .onSnapshot(async snapshot => {
-          console.log('listen snapshot: ', snapshot);
-          const history = [];
-          snapshot.forEach(doc => {
-            const date = doc.data().date.toDate();
-            const order = {
-              id: doc.id,
-              ...doc.data(),
-              date,
-            };
-            history.push(order);
-          });
-          dispatch({
-            type: 'SET_HISTORY',
-            history,
-          });
-          console.log('listen data length: ', history.length);
 
-          return snapshot;
-        });
-      // .then(snapshot => {
-      //   console.log('then snapshot: ', snapshot)
-      //   const history = [];
-      //   snapshot.forEach(doc => {
-      //     const date = doc.data().date.toDate();
-      //     const order = {
-      //       id: doc.id,
-      //       ...doc.data(),
-      //       date
-      //     };
-      //     history.push(order);
-      //   });
-      //   dispatch({
-      //     type: "SET_HISTORY",
-      //     history
-      //   });
-      //   return true;
-      // })
-      // .catch(err => {
-      //   console.error("Error fetching Orders", err);
-      //   return false;
-      // });
-    }
-  });
+  const uid = firebase.auth().getUid();
+
+  await firestore
+    .collection('orders')
+    .where('userID', '==', uid)
+    .orderBy('date', 'desc')
+    .onSnapshot(async snapshot => {
+      console.log('listen snapshot: ', snapshot);
+      const history = [];
+      snapshot.forEach(doc => {
+        const date = doc.data().date.toDate();
+        const order = {
+          id: doc.id,
+          ...doc.data(),
+          date,
+        };
+        history.push(order);
+      });
+      dispatch({
+        type: 'SET_HISTORY',
+        history,
+      });
+      console.log('listen data length: ', history.length);
+
+      return snapshot;
+    });
 };
 
 export const restaurantOrderReady = order => async (
@@ -88,6 +64,35 @@ export const restaurantOrderReady = order => async (
   }
 };
 
+export const restaurantOrderPaymentReceived = order => async (
+  dispatch,
+  getState,
+  { getFirebase, getFirestore }
+) => {
+  try {
+    const firestore = getFirestore();
+
+    await firestore
+      .collection('orders')
+      .doc(order.id)
+      .update({
+        status: 'finalizada',
+      })
+      .then(() => {
+        dispatch({
+          type: 'RESTAURANT_UPDATE_STATUS',
+          order: { ...order, status: 'finalizada' },
+        });
+      });
+    return true;
+  } catch (error) {
+    if (error) {
+      console.error('Error on restaurant Order Confirm: ', error);
+      return false;
+    }
+  }
+};
+
 export const restaurantOrderPreprare = order => async (
   dispatch,
   getState,
@@ -102,8 +107,7 @@ export const restaurantOrderPreprare = order => async (
       .update({
         status: 'preparing',
       })
-      .then(doc => {
-        console.log('doc: ', doc);
+      .then(() => {
         dispatch({
           type: 'RESTAURANT_UPDATE_STATUS',
           order: { ...order, status: 'preparing' },
