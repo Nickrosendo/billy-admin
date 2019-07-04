@@ -174,7 +174,7 @@ class OrdersContainer extends Component {
     ) : (
       <div className={classes.root}>
         {history.map((order, index) => {
-          const parsedOrderDate = moment(order.date).format('DD/MM/YYYY hh:mm');
+          const parsedOrderDate = moment(order.date).format('DD/MM/YYYY HH:mm');
           return (
             <ExpansionPanel
               key={order.id}
