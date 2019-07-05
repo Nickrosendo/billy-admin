@@ -79,7 +79,7 @@ class SignUp extends Component {
   handleSignUp = (event) => {
     event.preventDefault();
     if (this.isValid()) {
-      console.log("entrou if");
+      
       this.props.signUp({
         email: this.state.email,
         ownerName: this.state.ownerName,

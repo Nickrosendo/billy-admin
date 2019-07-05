@@ -137,8 +137,7 @@ class App extends React.Component {
     anchorEl: null,
   };
 
-  handleProfileMenuOpen = (event) => {
-    console.log('anchorEl: ', event.currentTarget);
+  handleProfileMenuOpen = (event) => {   
 
     this.setState({
       anchorEl: event.currentTarget,

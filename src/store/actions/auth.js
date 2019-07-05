@@ -7,7 +7,7 @@ export const fetchProfile = () => (
   const firestore = getFirestore();
 
   const uid = firebase.auth().getUid();
-
+  console.log("uid: ", uid);
   if (uid) {
     firestore
       .collection('restaurants')
@@ -59,7 +59,7 @@ export const signUp = newRestaurant => (
 ) => {
   const firebase = getFirebase();
   const firestore = getFirestore();
-  console.log('entrou');
+  
   firebase
     .auth()
     .createUserWithEmailAndPassword(newRestaurant.email, newRestaurant.password)
@@ -72,6 +72,7 @@ export const signUp = newRestaurant => (
         companyName: newRestaurant.companyName,
         logoUrl: newRestaurant.logoUrl,
         cnpj: newRestaurant.cnpj,
+        menu: []
       };
 
       firestore

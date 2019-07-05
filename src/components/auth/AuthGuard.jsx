@@ -69,7 +69,7 @@ const styles = {
 
 class AuthGuard extends Component {
   state = {
-    isLogin: false,
+    isLogin: true,
   };
 
   render() {
