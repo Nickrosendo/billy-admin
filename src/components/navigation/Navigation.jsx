@@ -78,7 +78,6 @@ class Navigation extends Component {
           {[
             { label: "Pedidos", route: "/orders" },
             { label: "Cardápio", route: "/menu" },
-            { label: "Horário de Funcionamento", route: "/schedule" }
           ].map((item, index) => (
             <Link to={item.route} className={classes.item} key={item.label}>
               <ListItem button>
@@ -109,7 +108,7 @@ class Navigation extends Component {
     return (
       <nav className={classes.drawer}>
         {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-        <Hidden xsDown implementation="css">
+        <Hidden xsDown implementation="js">
           <Drawer
             className={classes.drawer}
             variant="permanent"
@@ -121,7 +120,7 @@ class Navigation extends Component {
             {drawer}
           </Drawer>
         </Hidden>
-        <Hidden smUp implementation="css">
+        <Hidden smUp implementation="js">
           <Drawer
             container={this.props.container}
             variant="temporary"

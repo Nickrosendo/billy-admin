@@ -14,7 +14,6 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 // ui components
 import Loading from '../../components/Loading';
-// import SplitButton from '../../components/inputs/SplitButton';
 
 //actions
 import {
@@ -153,21 +152,6 @@ class OrdersContainer extends Component {
   render() {
     const { classes, orders } = this.props;
     const { history } = orders;
-
-    // const orderOptions = [
-    //   {
-    //     label: 'Pedido confirmado',
-    //     handler: this.props.restaurantOrderConfirm,
-    //   },
-    //   {
-    //     label: 'Pedido preparado',
-    //     handler: this.props.restaurantOrderPreprare,
-    //   },
-    //   {
-    //     label: 'Pedido pronto',
-    //     handler: this.props.restaurantOrderReady,
-    //   },
-    // ];
 
     return this.state.loading ? (
       <Loading />

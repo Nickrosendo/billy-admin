@@ -27,11 +27,12 @@ import {
 import store from './store';
 import { connect } from 'react-redux';
 
+//auth
+import AuthGuard from './components/auth/AuthGuard';
+
 // routes
-import LoginContainer from './routes/login/LoginContainer';
 import OrdersContainer from './routes/orders/OrdersContainer';
 import MenuContainer from './routes/menu/MenuContainer';
-import OpeningScheduleContainer from './routes/opening-schedule/OpeningScheduleContainer';
 import HelpContainer from './routes/help/HelpContainer';
 
 // layout components
@@ -39,7 +40,7 @@ import Navigation from './components/navigation/Navigation';
 import Loading from './components/Loading';
 
 //actions 
-import { signOut } from './store/actions/auth';
+import { signOut, fetchProfile } from './store/actions/auth';
 
 import './App.css';
 
@@ -70,6 +71,7 @@ const styles = theme => ({
     flexGrow: 1,
     backgroundColor: theme.palette.background.default,
     textAlign: 'center',
+    overflowX: 'hidden',
     marginTop: 64,
   },
   grow: {
@@ -83,16 +85,16 @@ const styles = theme => ({
     '&:hover': {
       backgroundColor: fade(theme.palette.common.white, 0.25),
     },
-    marginRight: theme.spacing.unit * 2,
+    marginRight: theme.spacing(2),
     marginLeft: 0,
     width: '100%',
     [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing.unit * 3,
+      marginLeft: theme.spacing(3),
       width: 'auto',
     },
   },
   searchIcon: {
-    width: theme.spacing.unit * 9,
+    width: theme.spacing(9),
     height: '100%',
     position: 'absolute',
     pointerEvents: 'none',
@@ -105,10 +107,10 @@ const styles = theme => ({
     width: '100%',
   },
   inputInput: {
-    paddingTop: theme.spacing.unit,
-    paddingRight: theme.spacing.unit,
-    paddingBottom: theme.spacing.unit,
-    paddingLeft: theme.spacing.unit * 10,
+    paddingTop: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
+    paddingLeft: theme.spacing(10),
     transition: theme.transitions.create('width'),
     width: '100%',
     [theme.breakpoints.up('md')]: {
@@ -126,7 +128,7 @@ const styles = theme => ({
     [theme.breakpoints.up('md')]: {
       display: 'none',
     },
-  }
+  },
 });
 
 class App extends React.Component {
@@ -158,6 +160,7 @@ class App extends React.Component {
   componentDidMount() {
     console.time('firebaseInit');
     store.firebaseAuthIsReady.then(() => {
+      this.props.fetchProfile();
       this.setState({ initialized: true });
       console.timeEnd('firebaseInit');
     });
@@ -165,10 +168,9 @@ class App extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const open = Boolean(this.state.anchorEl);
-    console.log('render: ', this.props.firebase.auth.uid);
+    const open = Boolean(this.state.anchorEl);    
     if (this.state.initialized && !this.props.firebase.auth.uid) {
-      return <LoginContainer />;
+      return <AuthGuard />;
     }
 
     const renderMenu = (
@@ -249,7 +251,6 @@ class App extends React.Component {
             <Switch>
               <Route path="/orders" component={OrdersContainer} />
               <Route path="/menu" component={MenuContainer} />
-              <Route path="/schedule" component={OpeningScheduleContainer} />
               <Route path="/help" component={HelpContainer} />
               <Redirect from="/" to="/orders" />
             </Switch>
@@ -264,8 +265,9 @@ class App extends React.Component {
 
 const mapStateToProps = state => ({ firebase: state.firebase });
 const mapDispatchToProps = {
-  signOut
-}
+  signOut,
+  fetchProfile
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(
   withStyles(styles, { withTheme: true })(App)

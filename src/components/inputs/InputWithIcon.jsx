@@ -7,21 +7,22 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import FormControl from '@material-ui/core/FormControl';
 
 const styles = theme => ({
-  margin: {
-    margin: theme.spacing.unit,
+  root: {
+    margin: theme.spacing(1),
+    maxWidth: '100%',
+    minWidth: '50%',
   },
 });
 
 function InputWithIcon(props) {
-  const { classes, label, Icon, type, value, onChange } = props;
+  const { classes, label, Icon, type, name, value, onChange } = props;
 
   return (
-    <div>
-      <FormControl className={classes.margin}>
-        <InputLabel htmlFor="input-with-icon-adornment">{label}</InputLabel>
+      <FormControl className={classes.root}>
+        <InputLabel htmlFor={name}>{label}</InputLabel>
         <Input
-          id="input-with-icon-adornment"
           type={type ? type : 'text'}
+          name={name}
           startAdornment={
             props.Icon ? (
               <InputAdornment position="start">
@@ -33,7 +34,6 @@ function InputWithIcon(props) {
           onChange={onChange}
         />
       </FormControl>
-    </div>
   );
 }
 

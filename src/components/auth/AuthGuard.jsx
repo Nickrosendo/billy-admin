@@ -5,18 +5,12 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import FingerPrint from '@material-ui/icons/Fingerprint';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-
-import InputWithIcon from '../../components/inputs/InputWithIcon';
 
 import logo from '../../assets/images/billy-pizza.png';
 
-import { connect } from 'react-redux';
-
-// actions 
-import { signIn } from '../../store/actions/auth';
+import Login from './Login';
+import SignUp from './SignUp';
 
 const theme = createMuiTheme({
   typography: {
@@ -32,6 +26,7 @@ const theme = createMuiTheme({
 const styles = {
   root: {
     height: '100%',
+    width: '100%',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -46,6 +41,7 @@ const styles = {
   },
   content: {
     textAlign: 'center',
+    width: '100%'
   },
   bullet: {
     display: 'inline-block',
@@ -71,38 +67,9 @@ const styles = {
   },
 };
 
-class LoginContainer extends Component {
+class AuthGuard extends Component {
   state = {
-    email: '',
-    password: '',
-  };
-
-  handleSignin = event => {
-    event.preventDefault();
-    const credentials = {
-      email: this.state.email,
-      password: this.state.password,
-    };
-    console.log('credentials: ', credentials);
-    this.props.signIn(credentials);
-  };
-
-  handleEmail = event => {
-    const email = event.target.value;
-    if (email) {
-      this.setState({ email });
-    } else {
-      this.setState({ email: '' });
-    }
-  };
-
-  handlePassword = event => {
-    const password = event.target.value;
-    if (password) {
-      this.setState({ password });
-    } else {
-      this.setState({ password: '' });
-    }
+    isLogin: false,
   };
 
   render() {
@@ -119,37 +86,29 @@ class LoginContainer extends Component {
                 alt="logo-small"
               />
               <Typography variant="h3" component="h1">
-                Billy Admin
+                Billy Admin<br />
+                {this.state.isLogin ? 'Login' : 'Cadastro'}
               </Typography>
-
-              <InputWithIcon
-                label={'Email'}
-                Icon={AccountCircle}
-                value={this.state.email}
-                onChange={this.handleEmail}
-              />
-
-              <InputWithIcon
-                label={'Senha'}
-                Icon={FingerPrint}
-                type={'password'}
-                value={this.state.password}
-                onChange={this.handlePassword}
-              />
-
-              <Button
-                variant="contained"
-                color="primary"
-                className={classes.button}
-                onClick={this.handleSignin}
-              >
-                Entrar
-              </Button>
+              {this.state.isLogin ? <Login /> : <SignUp />}
             </CardContent>
             <CardActions>
-              <Button className={classes.secondaryButton} size="small">
-                Solicitar cadastro
-              </Button>
+              {this.state.isLogin ? (
+                <Button
+                  className={classes.secondaryButton}
+                  size="small"
+                  onClick={() => this.setState({ isLogin: false })}
+                >
+                  Cadastre-se já
+                </Button>
+              ) : (
+                <Button
+                  className={classes.secondaryButton}
+                  size="small"
+                  onClick={() => this.setState({ isLogin: true })}
+                >
+                  Fazer Login
+                </Button>
+              )}
             </CardActions>
           </MuiThemeProvider>
         </Card>
@@ -158,6 +117,4 @@ class LoginContainer extends Component {
   }
 }
 
-export default connect(null, {
-	signIn,
-})(withStyles(styles)(LoginContainer));
+export default withStyles(styles)(AuthGuard);
